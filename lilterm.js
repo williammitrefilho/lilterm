@@ -14,6 +14,9 @@ class LilTerm{
 		this.div.append(this.historyDiv, this.inputDiv)
 		this.inputDiv.appendChild(this.inputLine.p)
 		this.updateHistory()
+		this.div.onclick = ()=>{
+			this.focus()
+		}
 	}
 	setLineHeight(nLines){
 		this.lineHeight = nLines
@@ -27,11 +30,15 @@ class LilTerm{
 			.join("")
 	}
 	focus(){
-		this.inputLine.userSpace.click()
+		this.inputLine.userSpace.focus()
+	}
+	log(message){
+		this.inputLines.unshift({raw:message})
+		this.updateHistory()
 	}
 }
 
-LilTerm.defaultLineHeight = 4
+LilTerm.defaultLineHeight = 10
 
 class LilInput{
 	p = document.createElement("p")
