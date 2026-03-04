@@ -33,7 +33,7 @@ class LilTerm{
 		this.inputLine.userSpace.focus()
 	}
 	log(message){
-		this.inputLines.unshift({raw:message})
+		this.inputs.unshift({raw:message})
 		this.updateHistory()
 	}
 }
