@@ -4,10 +4,11 @@ class LilTerm{
 	div = document.createElement("div")
 	historyDiv = document.createElement("div")
 	inputDiv = document.createElement("div")
+	callables = {}
 	constructor(){
 		this.inputLine.gotInput = (input)=>{
-			console.log(input)
 			this.inputs.unshift(input)
+			this.tryout(input)
 			this.updateHistory()
 		}
 		this.setLineHeight(LilTerm.defaultLineHeight)
@@ -35,6 +36,9 @@ class LilTerm{
 	log(message){
 		this.inputs.unshift({raw:message})
 		this.updateHistory()
+	}
+	tryout(input){
+		this.callables[input.command]?.apply(null, input.args)
 	}
 }
 
