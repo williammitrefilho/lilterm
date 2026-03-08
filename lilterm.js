@@ -53,6 +53,7 @@ class LilTerm{
 LilTerm.defaultLineHeight = 10
 
 class LilInput{
+	history = []
 	p = document.createElement("p")
 	userSpace = document.createElement("span")
 
@@ -69,12 +70,22 @@ class LilInput{
 			e.preventDefault()
 			this.keyENTERPressed(e)
 		}
+		if(e.key == "ArrowUp"){
+			e.preventDefault()
+			this.keyARROWUPPressed(e)
+		}
 	}
 	keyENTERPressed(e){
 		let rawInput = this.userSpace.innerHTML,
 			commands = rawInput.split("\n")
-		this.gotInput(this.parse(rawInput))
+		let parsed = this.parse(rawInput)
+		this.history.unshift(parsed)
+		this.gotInput(parsed)
 		this.userSpace.innerHTML = ""
+	}
+	keyARROWUPPressed(e){
+		if(this.history.length > 0)
+			this.userSpace.innerHTML = this.history[0].raw
 	}
 	parse(rawInput){
 		let parsed = {raw:rawInput.trim()},
