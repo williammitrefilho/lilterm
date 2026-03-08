@@ -42,10 +42,10 @@ class LilTerm{
 	tryout(input){
 		this.callables[input.command]?.apply(null, input.args)
 	}
-	toDataURL(){
+	toDataURL(type){
 		let data = this.inputs.reverse()
 			.map(input=>input.raw).join("\n"),
-			blob = new Blob(Array.from(data), {type:"text/malls"})
+			blob = new Blob(Array.from(data), {type:type})
 		return URL.createObjectURL(blob)
 	}
 }
