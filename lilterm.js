@@ -1,26 +1,41 @@
 class LilTerm{
 	inputs = []
 	lines = []
-	inputLine = new LilInput()
+	name = "lilt"
 	div = document.createElement("div")
 	historyDiv = document.createElement("div")
 	inputDiv = document.createElement("div")
 	callables = {}
+	static safely(termName){
+		let safeName = termName.replaceAll(/[^A-Za-z]/g, '')
+		return eval(safeName)
+	}
+	static isATerm(termClass){
+
+		return termClass.prototype.__proto__ == this.prototype
+	}
 	constructor(){
-		this.inputLine.gotInput = (input)=>{
+		this.controller = this
+		this.owner = this
+		this.setLineHeight(LilTerm.defaultLineHeight)
+		this.updateHistory()
+		this.div.onclick = ()=>{
+			this.focus()
+		}
+		this.retach(new LilInput())
+		this.inputDiv.appendChild(this.inputLine.p)
+		this.div.append(this.historyDiv, this.inputDiv)
+	}
+	retach(inputLine){
+		inputLine.gotInput = (input)=>{
 			this.inputs.unshift(input)
 			this.lines.unshift(input)
 			this.tryout(input)
 			this.updateHistory()
 		}
-		this.setLineHeight(LilTerm.defaultLineHeight)
-		this.div.append(this.historyDiv, this.inputDiv)
-		this.inputDiv.appendChild(this.inputLine.p)
-		this.updateHistory()
-		this.div.onclick = ()=>{
-			this.focus()
-		}
+		this.inputLine = inputLine
 	}
+
 	setLineHeight(nLines){
 		this.lineHeight = nLines
 		while(this.lines.length < nLines)
@@ -29,7 +44,7 @@ class LilTerm{
 	updateHistory(){
 		this.historyDiv.innerHTML = this.lines.slice(0, this.lineHeight)
 			.reverse()
-			.map(input=>`<p>>${input.raw}</p>`)
+			.map(input=>`<p>&gt;${input.raw}</p>`)
 			.join("")
 	}
 	focus(){
@@ -48,22 +63,51 @@ class LilTerm{
 			blob = new Blob(Array.from(data), {type:type})
 		return URL.createObjectURL(blob)
 	}
+	exit(){
+		this.goodbye()
+		this.concede(this.owner)
+	}
+	yurup(){
+		this.log("Helou")
+	}
+	start(terminal){
+		terminal.owner = this
+		this.concede(terminal)
+		terminal.yurup()
+	}
+	concede(terminal){
+		terminal.historyDiv = this.historyDiv 
+		terminal.inputDiv = this.inputDiv 
+		terminal.retach(this.inputLine)
+		terminal.inputLine.label = terminal.name
+		this.controller = terminal
+	}
+	goodbye(){
+		this.log("baibai")
+	}
 }
 
 LilTerm.defaultLineHeight = 10
 
 class LilInput{
+	_label = "lilt"
 	history = []
 	p = document.createElement("p")
 	userSpace = document.createElement("span")
+	labelSpace = document.createElement("span")
 
 	constructor(){
-		this.p.innerHTML = ">"
 		this.userSpace.setAttribute("contenteditable", "plaintext-only")
+		this.p.appendChild(this.labelSpace)
 		this.p.appendChild(this.userSpace)
 		this.p.onkeydown = (e)=>{
 			this.keyDown(e)
 		}
+	}
+// 10 mar 2026 "Hindsight and Understanding"
+	set label(label){
+		this._label = label
+		this.labelSpace.innerHTML = `${this._label}&gt;`
 	}
 	keyDown(e){
 		if(e.key == "Enter"){
