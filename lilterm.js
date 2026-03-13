@@ -1,18 +1,23 @@
 class LilTerm{
 	inputs = []
 	lines = []
+	subject = {}
 	name = "lilt"
 	div = document.createElement("div")
 	historyDiv = document.createElement("div")
 	inputDiv = document.createElement("div")
 	callables = {}
-	static safely(termName){
-		let safeName = termName.replaceAll(/[^A-Za-z]/g, '')
-		return eval(safeName)
+	static codeToFile(code, name = "code.svg", type="image/svg+xml"){
+		let file = new File([this.blobinate(code, type)], name)
+		return file
 	}
 	static isATerm(termClass){
 
 		return termClass.prototype.__proto__ == this.prototype
+	}
+	static safely(termName){
+		let safeName = termName.replaceAll(/[^A-Za-z]/g, '')
+		return eval(safeName)
 	}
 	constructor(){
 		this.controller = this
@@ -25,6 +30,13 @@ class LilTerm{
 		this.retach(new LilInput())
 		this.inputDiv.appendChild(this.inputLine.p)
 		this.div.append(this.historyDiv, this.inputDiv)
+	}
+	on(targetType, targetId, callback){
+		let target = this.subject[targetType](targetId)
+		if(!target)
+			return term.log(`no ${targetType}!?`)
+
+		callback(target)
 	}
 	retach(inputLine){
 		inputLine.gotInput = (input)=>{
